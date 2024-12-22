@@ -1,0 +1,95 @@
+# Function to check if a character is a letter (a-z or A-Z)
+def is_letter(char):
+    return char.isalpha()
+
+# Function to check if a character is a digit (0-9)
+def is_digit(char):
+    return char.isdigit()
+
+# Lexer function to tokenize the input text
+def lexer(input_text):
+    # Initialize an empty list to store tokens
+    tokens = []
+    
+    # Index to traverse through the input text
+    i = 0
+    length = len(input_text)  # Total length of the input
+
+    while i < length:
+        char = input_text[i]  # Current character being analyzed
+
+        # Skip whitespace (spaces, tabs, newlines)
+        if char.isspace():
+            i += 1
+            continue
+
+        # Check for identifiers (variable names)
+        if is_letter(char):
+            # Start of an identifier
+            start = i
+            # Consume all valid identifier characters (letters, digits)
+            while i < length and (is_letter(input_text[i]) or is_digit(input_text[i])):
+                i += 1
+            identifier = input_text[start:i]  # Extract the identifier
+            tokens.append(("IDENTIFIER", identifier))  # Add token
+            continue
+
+        # Check for numbers (integer literals only)
+        if is_digit(char):
+            # Start of a number
+            start = i
+            # Consume all consecutive digits
+            while i < length and is_digit(input_text[i]):
+                i += 1
+            number = input_text[start:i]  # Extract the number
+            tokens.append(("NUMBER", number))  # Add token
+            continue
+
+        # Check for the assignment operator '='
+        if char == "=":
+            tokens.append(("ASSIGNMENT", char))  # Add token
+            i += 1
+            continue
+
+        # Check for arithmetic operators (+, -, *, /)
+        if char in "+-*/":
+            tokens.append(("OPERATOR", char))  # Add token
+            i += 1
+            continue
+
+        # Check for parentheses '(' or ')'
+        if char == "(":
+            tokens.append(("PARENTHESIS", "("))  # Add token
+            i += 1
+            continue
+        if char == ")":
+            tokens.append(("PARENTHESIS", ")"))  # Add token
+            i += 1
+            continue
+
+        # Check for semicolon ';'
+        if char == ";":
+            tokens.append(("SEMICOLON", char))  # Add token
+            i += 1
+            continue
+
+        # Raise an error if an unexpected character is encountered
+        raise ValueError(f"Unexpected character: {char}")
+
+    return tokens  # Return the list of tokens
+
+# Main program starts here
+if __name__ == "__main__":
+    # Prompt the user to enter a code snippet
+    user_input = input("Enter your code: ")
+
+    try:
+        # Tokenize the user input using the lexer function
+        tokens = lexer(user_input)
+        print("\nTokens:")
+        # Display each token in the output
+        for token in tokens:
+            print(token)
+    except ValueError as e:
+        # Handle any errors (e.g., unexpected characters)
+        print(f"Error: {e}")
